@@ -1,0 +1,11 @@
+/home/nutrynity/Documents/Mods/Rimworld/Assemblies/ImprovedVanillaWeapons.dll
+/home/nutrynity/Documents/Mods/Rimworld/Assemblies/ImprovedVanillaWeapons.pdb
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/Assemblies/ImprovedVanillaWeapons.dll
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/Assemblies/ImprovedVanillaWeapons.pdb
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.csproj.AssemblyReference.cache
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.GeneratedMSBuildEditorConfig.editorconfig
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.AssemblyInfoInputs.cache
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.AssemblyInfo.cs
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.csproj.CoreCompileInputs.cache
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.dll
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.pdb

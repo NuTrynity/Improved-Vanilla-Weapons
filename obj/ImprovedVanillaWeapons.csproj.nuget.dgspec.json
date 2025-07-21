@@ -1,0 +1,53 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/ImprovedVanillaWeapons.csproj": {}
+  },
+  "projects": {
+    "/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/ImprovedVanillaWeapons.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/ImprovedVanillaWeapons.csproj",
+        "projectName": "ImprovedVanillaWeapons",
+        "projectPath": "/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/ImprovedVanillaWeapons.csproj",
+        "packagesPath": "/home/nutrynity/.nuget/packages/",
+        "outputPath": "/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/nutrynity/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "targetAlias": "net472",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net472": {
+          "targetAlias": "net472",
+          "dependencies": {
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )",
+              "autoReferenced": true
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.118/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
