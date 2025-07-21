@@ -64,6 +64,7 @@ namespace ImprovedVanillaWeapons
                     }
                 }
             }
+            
             Log.Message($"[SIVW] Weapons modified: {weapons_matched}.");
         }
     }
