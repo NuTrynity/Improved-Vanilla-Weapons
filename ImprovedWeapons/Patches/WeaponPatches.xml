@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- 
+    Template for adding the tag for a weapon:
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="defName_Here"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+-->
+
+<Patch>
+<!-- Neolithic -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Bow_Short"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Pila"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Bow_Recurve"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Bow_Great"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+<!-- Industrial -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_Revolver"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+    <xpath>/Defs/ThingDef[defName="Gun_AssaultRifle"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_HeavySMG"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_Autopistol"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_MachinePistol"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_BoltActionRifle"]</xpath>
+        <value>
+            <weaponTags>
+                <li>slightlyImprovedWeaponsTag</li>
+            </weaponTags>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_PumpShotgun"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_ChainShotgun"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_LMG"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_SniperRifle"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_Minigun"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <!-- Spacer -->
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_ChargeRifle"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+
+    <Operation Class="PatchOperationAdd">
+        <xpath>/Defs/ThingDef[defName="Gun_ChargeLance"]/weaponTags</xpath>
+        <value>
+            <li>slightlyImprovedWeaponsTag</li>
+        </value>
+    </Operation>
+</Patch>
