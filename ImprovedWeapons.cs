@@ -1,7 +1,4 @@
 ﻿using Verse;
-using System.Reflection;
-using System.Linq;
-using System.Collections.Generic;
 using RimWorld;
 
 namespace ImprovedVanillaWeapons
@@ -11,19 +8,20 @@ namespace ImprovedVanillaWeapons
         public const string CustomWeaponTag = "slightlyImprovedWeaponsTag";
         public ImprovedWeapons(ModContentPack content) : base(content)
         {
-            LongEventHandler.QueueLongEvent(() => ApplyWeaponChanges(CustomWeaponTag), "LoadingDefs_SIVM_CustomTagChanges", true, null);
+            LongEventHandler.QueueLongEvent(() => ApplyWeaponChanges(CustomWeaponTag), "LoadingDefs_SIVW_CustomTagChanges", true, null);
             Log.Message("[SIVW] Successfully Modified Tagged Weapons");
         }
 
-        private void ApplyWeaponChanges(string weapon_tag)
+        private void ApplyWeaponChanges(string weaponTag)
         {
-            int weapons_matched = 0;
-
+            int weaponMatched = 0;
+            int projectilesModified = 0;
+            
             foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefs)
             {
-                if (thingDef.IsRangedWeapon && thingDef.weaponTags != null && thingDef.weaponTags.Contains(weapon_tag))
+                if (thingDef.IsRangedWeapon && thingDef.weaponTags != null && thingDef.weaponTags.Contains(weaponTag))
                 {
-                    weapons_matched++;
+                    weaponMatched++;
                     // Changes weapon accuracy
                     if (thingDef.statBases != null)
                     {
@@ -59,13 +57,19 @@ namespace ImprovedVanillaWeapons
                         {
                             primaryVerb.burstShotCount *= 3;
                         }
-                        
+
                         primaryVerb.ticksBetweenBurstShots /= 2;
+
+                        if (primaryVerb.defaultProjectile != null)
+                        {
+                            primaryVerb.defaultProjectile.projectile.speed *= 1.25f;
+                            projectilesModified++;
+                        }
                     }
                 }
             }
             
-            Log.Message($"[SIVW] Weapons modified: {weapons_matched}.");
+            Log.Message($"[SIVW] Weapons modified : {weaponMatched}, projectiles modified : {projectilesModified}");
         }
     }
 }
