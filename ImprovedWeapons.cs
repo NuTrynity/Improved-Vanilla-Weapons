@@ -1,7 +1,5 @@
 ﻿using Verse;
-using System.Reflection;
 using System.Linq;
-using System.Collections.Generic;
 using RimWorld;
 
 namespace ImprovedVanillaWeapons
@@ -18,6 +16,7 @@ namespace ImprovedVanillaWeapons
         private void ApplyWeaponChanges(string weapon_tag)
         {
             int weapons_matched = 0;
+            int turrets_modified = 0;
 
             foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefs)
             {
@@ -59,13 +58,26 @@ namespace ImprovedVanillaWeapons
                         {
                             primaryVerb.burstShotCount *= 3;
                         }
-                        
+
                         primaryVerb.ticksBetweenBurstShots /= 2;
                     }
                 }
             }
             
-            Log.Message($"[SIVW] Weapons modified: {weapons_matched}.");
+            // Turret Cooldown
+            var all_turrets = DefDatabase<ThingDef>.AllDefs.Where(td => (td.building != null && td.building.IsTurret));
+            
+            foreach (var turretDef in all_turrets)
+            {
+                if (turretDef.building.turretBurstCooldownTime > 0)
+                {
+                    turretDef.building.turretBurstCooldownTime = 0.1f;
+                    turretDef.building.turretBurstWarmupTime = new FloatRange(0.0f);
+                    turrets_modified++;
+                }
+            }
+            
+            Log.Message($"[SIVW] Weapons modified: {weapons_matched},  turrets modified: {turrets_modified}.");
         }
     }
 }

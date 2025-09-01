@@ -9,3 +9,6 @@
 /home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.csproj.CoreCompileInputs.cache
 /home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.dll
 /home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.pdb
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/ImprovedWeapons/Assemblies/ImprovedVanillaWeapons.dll
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/ImprovedWeapons/Assemblies/ImprovedVanillaWeapons.pdb
+/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.sourcelink.json
