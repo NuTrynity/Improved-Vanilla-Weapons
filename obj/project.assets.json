@@ -420,11 +420,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/ImprovedVanillaWeapons.csproj",
+      "projectUniqueName": "/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/ImprovedVanillaWeapons.csproj",
       "projectName": "ImprovedVanillaWeapons",
-      "projectPath": "/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/ImprovedVanillaWeapons.csproj",
+      "projectPath": "/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/ImprovedVanillaWeapons.csproj",
       "packagesPath": "/home/nutrynity/.nuget/packages/",
-      "outputPath": "/home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/",
+      "outputPath": "/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/nutrynity/.nuget/NuGet/NuGet.Config"
@@ -433,6 +433,7 @@
         "net472"
       ],
       "sources": {
+        "/usr/lib/dotnet/library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -445,7 +446,13 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net472": {
@@ -458,7 +465,7 @@
             "autoReferenced": true
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.119/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.104/RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RWPath>/media/nutrynity/240GB_SSD/SteamLibrary/steamapps/common/RimWorld</RWPath>
     <OutputPath>ImprovedWeapons/Assemblies/</OutputPath>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -11,20 +12,15 @@
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>/mnt/3d363189-85bd-44c3-82d7-02a1c7a8ed1f/SteamLibrary/steamapps/common/RimWorld/RimWorldLinux_Data/Managed/Assembly-CSharp.dll</HintPath>
+      <HintPath>$(RWPath)/RimWorldLinux_Data/Managed/Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Verse">
-      <HintPath>/mnt/3d363189-85bd-44c3-82d7-02a1c7a8ed1f/SteamLibrary/steamapps/common/RimWorld/RimWorldLinux_Data/Managed/Verse.dll</HintPath>
+    <Reference Include="UnityEngine">
+      <HintPath>/RimWorldLinux_Data/Managed/UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>/mnt/3d363189-85bd-44c3-82d7-02a1c7a8ed1f/SteamLibrary/steamapps/common/RimWorld/RimWorldLinux_Data/Managed/UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-
-    <Reference Include="0Harmony">
-      <HintPath>/mnt/3d363189-85bd-44c3-82d7-02a1c7a8ed1f/SteamLibrary/steamapps/workshop/content/294100/2009463077/Current/Assemblies/0Harmony.dll</HintPath>
+      <HintPath>$(RWPath)/RimWorldLinux_Data/Managed/UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

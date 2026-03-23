@@ -1,83 +1,128 @@
-﻿using Verse;
-using System.Linq;
+﻿using System.Linq;
+using UnityEngine;
 using RimWorld;
+using Verse;
 
 namespace ImprovedVanillaWeapons
 {
+    public class ImprovedWeaponsSettings : ModSettings
+    {
+        public bool turret_rapid_fire = true;
+        public bool turret_instant_cooldown = true;
+
+        public override void ExposeData()
+        {
+            Scribe_Values.Look(ref turret_rapid_fire, "rapid_turrets_turrets", true);
+            Scribe_Values.Look(ref turret_instant_cooldown, "turret_instant_cooldown", true);
+
+            base.ExposeData();
+        }
+    }
+
     public class ImprovedWeapons : Mod
     {
-        public const string CustomWeaponTag = "slightlyImprovedWeaponsTag";
+        public ImprovedWeaponsSettings mod_settings;
+
         public ImprovedWeapons(ModContentPack content) : base(content)
         {
-            LongEventHandler.QueueLongEvent(() => ApplyWeaponChanges(CustomWeaponTag), "LoadingDefs_SIVM_CustomTagChanges", true, null);
+            mod_settings = GetSettings<ImprovedWeaponsSettings>();
+            LongEventHandler.QueueLongEvent(ApplyWeaponChanges, "[SIVW] Changing Weapon Values", true, null);
             Log.Message("[SIVW] Successfully Modified Tagged Weapons");
         }
 
-        private void ApplyWeaponChanges(string weapon_tag)
+        public override void DoSettingsWindowContents(Rect inRect)
+        {
+            Listing_Standard listing = new Listing_Standard();
+            listing.Begin(inRect);
+
+            listing.Label("REQUIRES RESTART TO TAKE EFFECT");
+            listing.Gap();
+            listing.Label("Turret Modification");
+            listing.CheckboxLabeled("Rapid Fire Turrets", ref mod_settings.turret_rapid_fire);
+            listing.CheckboxLabeled("Instant Cooldown", ref mod_settings.turret_instant_cooldown);
+
+            listing.End();
+            base.DoSettingsWindowContents(inRect);
+        }
+
+        public override string SettingsCategory()
+        {
+            return "[NuT] Slightly Improved Weapons";
+        }
+
+        private void ApplyWeaponChanges()
         {
             int weapons_matched = 0;
             int turrets_modified = 0;
 
             foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefs)
             {
-                if (thingDef.IsRangedWeapon && thingDef.weaponTags != null && thingDef.weaponTags.Contains(weapon_tag))
+                #region Weapon Mods
+                if (thingDef.IsRangedWeapon && thingDef.weaponTags != null)
                 {
-                    weapons_matched++;
                     // Changes weapon accuracy
-                    if (thingDef.statBases != null)
-                    {
-                        StatModifier accuracyTouch = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyTouch);
-                        StatModifier accuracyShort = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyShort);
-                        StatModifier accuracyMedium = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyMedium);
-                        StatModifier accuracyLong = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyLong);
+                    if (thingDef.statBases == null)
+                        continue;
 
-                        if (accuracyTouch != null)
-                        {
-                            accuracyTouch.value *= 1.5f;
-                        }
-                        if (accuracyShort != null)
-                        {
-                            accuracyShort.value *= 1.5f;
-                        }
-                        if (accuracyMedium != null)
-                        {
-                            accuracyMedium.value *= 1.5f;
-                        }
-                        if (accuracyLong != null)
-                        {
-                            accuracyLong.value *= 1.5f;
-                        }
-                    }
+                    weapons_matched++;
+
+                    StatModifier accuracyTouch = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyTouch);
+                    StatModifier accuracyShort = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyShort);
+                    StatModifier accuracyMedium = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyMedium);
+                    StatModifier accuracyLong = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyLong);
+
+                    if (accuracyTouch != null) accuracyTouch.value *= 1.5f;
+                    if (accuracyShort != null) accuracyShort.value *= 1.5f;
+                    if (accuracyMedium != null) accuracyMedium.value *= 1.5f;
+                    if (accuracyLong != null) accuracyLong.value *= 1.5f;
 
                     // Changes weapon BurstShotCount
-                    if (thingDef.Verbs != null && thingDef.Verbs.Any())
+                    if (!thingDef.Verbs.NullOrEmpty() && thingDef.building == null)
                     {
                         VerbProperties primaryVerb = thingDef.Verbs[0];
 
                         if (primaryVerb.burstShotCount > 1)
-                        {
                             primaryVerb.burstShotCount *= 3;
-                        }
 
                         primaryVerb.ticksBetweenBurstShots /= 2;
                     }
                 }
-            }
-            
-            // Turret Cooldown
-            var all_turrets = DefDatabase<ThingDef>.AllDefs.Where(td => (td.building != null && td.building.IsTurret));
-            
-            foreach (var turretDef in all_turrets)
-            {
-                if (turretDef.building.turretBurstCooldownTime > 0)
+                #endregion
+
+                #region Turret Mods
+                if (thingDef.building?.IsTurret == true)
                 {
-                    turretDef.building.turretBurstCooldownTime = 0.1f;
-                    turretDef.building.turretBurstWarmupTime = new FloatRange(0.0f);
-                    turrets_modified++;
+                    ThingDef gun_def = thingDef.building.turretGunDef;
+                    VerbProperties? turret_properties = gun_def?.Verbs?.FirstOrDefault();
+                    bool is_modified = false;
+
+                    if (turret_properties != null && mod_settings.turret_rapid_fire)
+                    {
+                        turret_properties.burstShotCount *= 3;
+                        turret_properties.ticksBetweenBurstShots /= 2;
+
+                        is_modified = true;
+                    }
+
+                    if (mod_settings.turret_instant_cooldown)
+                    {
+                        if (thingDef.building.turretBurstCooldownTime > 0f)
+                        {
+                            thingDef.building.turretBurstCooldownTime = 0.1f;
+                            thingDef.building.turretBurstWarmupTime = new FloatRange(0.0f);
+                        }
+
+                        is_modified = true;
+                    }
+
+                    if (is_modified)
+                        turrets_modified++;
                 }
+                #endregion
             }
-            
-            Log.Message($"[SIVW] Weapons modified: {weapons_matched},  turrets modified: {turrets_modified}.");
+
+            Log.Message($"[SIVW] Weapons modified: {weapons_matched}");
+            Log.Message($"[SIVW] Turrets modified: {turrets_modified}");
         }
     }
 }

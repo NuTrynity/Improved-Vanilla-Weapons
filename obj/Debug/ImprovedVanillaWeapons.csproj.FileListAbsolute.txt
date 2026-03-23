@@ -12,3 +12,13 @@
 /home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/ImprovedWeapons/Assemblies/ImprovedVanillaWeapons.dll
 /home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/ImprovedWeapons/Assemblies/ImprovedVanillaWeapons.pdb
 /home/nutrynity/Documents/Mods/Rimworld/ImprovedVanillaWeapons/obj/Debug/ImprovedVanillaWeapons.sourcelink.json
+/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/ImprovedWeapons/Assemblies/ImprovedVanillaWeapons.dll
+/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/ImprovedWeapons/Assemblies/ImprovedVanillaWeapons.pdb
+/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/obj/Debug/ImprovedVanillaWeapons.csproj.AssemblyReference.cache
+/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/obj/Debug/ImprovedVanillaWeapons.GeneratedMSBuildEditorConfig.editorconfig
+/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/obj/Debug/ImprovedVanillaWeapons.AssemblyInfoInputs.cache
+/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/obj/Debug/ImprovedVanillaWeapons.AssemblyInfo.cs
+/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/obj/Debug/ImprovedVanillaWeapons.csproj.CoreCompileInputs.cache
+/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/obj/Debug/ImprovedVanillaWeapons.sourcelink.json
+/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/obj/Debug/ImprovedVanillaWeapons.dll
+/home/nutrynity/Documents/GitHub/Improved-Vanilla-Weapons/obj/Debug/ImprovedVanillaWeapons.pdb
