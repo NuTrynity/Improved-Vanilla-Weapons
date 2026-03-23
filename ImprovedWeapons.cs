@@ -10,6 +10,7 @@ namespace ImprovedVanillaWeapons
         public bool turret_rapid_fire = true;
         public bool turret_instant_cooldown = true;
 
+        public int burst_multiplier = 3;
         public float weapon_accuracy = 2.0f;
 
         public override void ExposeData()
@@ -17,6 +18,7 @@ namespace ImprovedVanillaWeapons
             Scribe_Values.Look(ref turret_rapid_fire, "rapid_turrets_turrets", true);
             Scribe_Values.Look(ref turret_instant_cooldown, "turret_instant_cooldown", true);
 
+            Scribe_Values.Look(ref burst_multiplier, "burst_multiplier", 3);
             Scribe_Values.Look(ref weapon_accuracy, "weapon_accuracy", 2.0f);
 
             base.ExposeData();
@@ -34,6 +36,7 @@ namespace ImprovedVanillaWeapons
             Log.Message("[SIVW] Successfully Modified Tagged Weapons");
         }
 
+        #region Mod Settings
         public override void DoSettingsWindowContents(Rect inRect)
         {
             Listing_Standard listing = new Listing_Standard();
@@ -43,14 +46,18 @@ namespace ImprovedVanillaWeapons
             
             listing.Gap();
             
-            listing.Label("=== \tTurret Modification\t ===");
+            listing.Label("=== Turret Modification ===");
             listing.CheckboxLabeled("Rapid Fire Turrets", ref mod_settings.turret_rapid_fire);
             listing.CheckboxLabeled("Instant Cooldown", ref mod_settings.turret_instant_cooldown);
 
             listing.Gap();
 
-            listing.Label("=== \tAccuracy\t ===");
-            listing.SliderLabeled("Weapon Accuracy: " + mod_settings.weapon_accuracy.ToString("P0"), mod_settings.weapon_accuracy, 1.0f, 10.0f);
+            listing.Label("=== Weapon Modification ===");
+            listing.Label("Weapon Accuracy: " + mod_settings.weapon_accuracy.ToString("F1"));
+            mod_settings.weapon_accuracy = listing.Slider(mod_settings.weapon_accuracy, 1.0f, 10.0f);
+
+            listing.Label("Weapon Burst Modifier: " + mod_settings.burst_multiplier);
+            mod_settings.burst_multiplier = (int)listing.Slider(mod_settings.burst_multiplier, 1, 3);
 
             listing.End();
             base.DoSettingsWindowContents(inRect);
@@ -60,6 +67,7 @@ namespace ImprovedVanillaWeapons
         {
             return "[NuT] Slightly Improved Weapons";
         }
+        #endregion
 
         private void ApplyWeaponChanges()
         {
@@ -109,7 +117,7 @@ namespace ImprovedVanillaWeapons
 
                     if (turret_properties != null && mod_settings.turret_rapid_fire)
                     {
-                        turret_properties.burstShotCount *= 3;
+                        turret_properties.burstShotCount *= mod_settings.burst_multiplier;
                         turret_properties.ticksBetweenBurstShots /= 2;
 
                         is_modified = true;
