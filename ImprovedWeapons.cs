@@ -10,10 +10,14 @@ namespace ImprovedVanillaWeapons
         public bool turret_rapid_fire = true;
         public bool turret_instant_cooldown = true;
 
+        public float weapon_accuracy = 2.0f;
+
         public override void ExposeData()
         {
             Scribe_Values.Look(ref turret_rapid_fire, "rapid_turrets_turrets", true);
             Scribe_Values.Look(ref turret_instant_cooldown, "turret_instant_cooldown", true);
+
+            Scribe_Values.Look(ref weapon_accuracy, "weapon_accuracy", 2.0f);
 
             base.ExposeData();
         }
@@ -36,10 +40,17 @@ namespace ImprovedVanillaWeapons
             listing.Begin(inRect);
 
             listing.Label("REQUIRES RESTART TO TAKE EFFECT");
+            
             listing.Gap();
-            listing.Label("Turret Modification");
+            
+            listing.Label("=== \tTurret Modification\t ===");
             listing.CheckboxLabeled("Rapid Fire Turrets", ref mod_settings.turret_rapid_fire);
             listing.CheckboxLabeled("Instant Cooldown", ref mod_settings.turret_instant_cooldown);
+
+            listing.Gap();
+
+            listing.Label("=== \tAccuracy\t ===");
+            listing.SliderLabeled("Weapon Accuracy: " + mod_settings.weapon_accuracy.ToString("P0"), mod_settings.weapon_accuracy, 1.0f, 10.0f);
 
             listing.End();
             base.DoSettingsWindowContents(inRect);
@@ -71,10 +82,10 @@ namespace ImprovedVanillaWeapons
                     StatModifier accuracyMedium = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyMedium);
                     StatModifier accuracyLong = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyLong);
 
-                    if (accuracyTouch != null) accuracyTouch.value *= 1.5f;
-                    if (accuracyShort != null) accuracyShort.value *= 1.5f;
-                    if (accuracyMedium != null) accuracyMedium.value *= 1.5f;
-                    if (accuracyLong != null) accuracyLong.value *= 1.5f;
+                    if (accuracyTouch != null) accuracyTouch.value *= mod_settings.weapon_accuracy;
+                    if (accuracyShort != null) accuracyShort.value *= mod_settings.weapon_accuracy;
+                    if (accuracyMedium != null) accuracyMedium.value *= mod_settings.weapon_accuracy;
+                    if (accuracyLong != null) accuracyLong.value *= mod_settings.weapon_accuracy;
 
                     // Changes weapon BurstShotCount
                     if (!thingDef.Verbs.NullOrEmpty() && thingDef.building == null)
