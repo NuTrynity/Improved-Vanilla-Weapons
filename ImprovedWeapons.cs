@@ -33,7 +33,6 @@ namespace ImprovedVanillaWeapons
         {
             mod_settings = GetSettings<ImprovedWeaponsSettings>();
             LongEventHandler.QueueLongEvent(ApplyWeaponChanges, "[SIVW] Changing Weapon Values", true, null);
-            Log.Message("[SIVW] Successfully Modified Tagged Weapons");
         }
 
         #region Mod Settings
@@ -42,6 +41,7 @@ namespace ImprovedVanillaWeapons
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(inRect);
             
+            listing.Label("REQUIRES RESTART TO TAKE EFFECT");
             listing.Gap();
             
             listing.Label("=== Turret Modification ===");
@@ -59,12 +59,6 @@ namespace ImprovedVanillaWeapons
 
             listing.End();
             base.DoSettingsWindowContents(inRect);
-        }
-
-        public override void WriteSettings()
-        {
-            base.WriteSettings();
-            ApplyWeaponChanges();
         }
 
         public override string SettingsCategory()
@@ -144,6 +138,7 @@ namespace ImprovedVanillaWeapons
                 #endregion
             }
 
+            Log.Message("[SIVW] Successfully Modified Tagged Weapons");
             Log.Message($"[SIVW] Weapons modified: {weapons_matched}");
             Log.Message($"[SIVW] Turrets modified: {turrets_modified}");
         }

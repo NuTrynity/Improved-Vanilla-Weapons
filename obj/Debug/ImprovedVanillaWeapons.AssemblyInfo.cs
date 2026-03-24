@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ImprovedVanillaWeapons")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+919f3e01186f43a85157f13e78e45e0fe1881d07")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+936f7fef7ab687da021301d7105ba55246ca82c3")]
 [assembly: System.Reflection.AssemblyProductAttribute("ImprovedVanillaWeapons")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ImprovedVanillaWeapons")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
