@@ -41,8 +41,6 @@ namespace ImprovedVanillaWeapons
         {
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(inRect);
-
-            listing.Label("REQUIRES RESTART TO TAKE EFFECT");
             
             listing.Gap();
             
@@ -61,6 +59,12 @@ namespace ImprovedVanillaWeapons
 
             listing.End();
             base.DoSettingsWindowContents(inRect);
+        }
+
+        public override void WriteSettings()
+        {
+            base.WriteSettings();
+            ApplyWeaponChanges();
         }
 
         public override string SettingsCategory()
@@ -101,7 +105,7 @@ namespace ImprovedVanillaWeapons
                         VerbProperties primaryVerb = thingDef.Verbs[0];
 
                         if (primaryVerb.burstShotCount > 1)
-                            primaryVerb.burstShotCount *= 3;
+                            primaryVerb.burstShotCount *= mod_settings.burst_multiplier;
 
                         primaryVerb.ticksBetweenBurstShots /= 2;
                     }
