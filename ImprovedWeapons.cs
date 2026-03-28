@@ -51,10 +51,10 @@ namespace ImprovedVanillaWeapons
             listing.Gap();
 
             listing.Label("=== Weapon Modification ===");
-            listing.Label("Weapon Accuracy: " + mod_settings.weapon_accuracy.ToString("F1"));
+            listing.Label($"Weapon Accuracy: {mod_settings.weapon_accuracy:F1}");
             mod_settings.weapon_accuracy = listing.Slider(mod_settings.weapon_accuracy, 1.0f, 10.0f);
 
-            listing.Label("Weapon Burst Modifier: " + mod_settings.burst_multiplier);
+            listing.Label($"Weapon Burst Modifier: {mod_settings.burst_multiplier:F1}");
             mod_settings.burst_multiplier = (int)listing.Slider(mod_settings.burst_multiplier, 1, 3);
 
             listing.End();
@@ -72,6 +72,11 @@ namespace ImprovedVanillaWeapons
             int weapons_matched = 0;
             int turrets_modified = 0;
 
+            if (StatDefOf.AccuracyTouch != null) StatDefOf.AccuracyTouch.defaultBaseValue *= mod_settings.weapon_accuracy;
+            if (StatDefOf.AccuracyShort != null) StatDefOf.AccuracyShort.defaultBaseValue *= mod_settings.weapon_accuracy;
+            if (StatDefOf.AccuracyMedium != null) StatDefOf.AccuracyMedium.defaultBaseValue *= mod_settings.weapon_accuracy;
+            if (StatDefOf.AccuracyLong != null) StatDefOf.AccuracyLong.defaultBaseValue *= mod_settings.weapon_accuracy;
+
             foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefs)
             {
                 #region Weapon Mods
@@ -83,16 +88,6 @@ namespace ImprovedVanillaWeapons
 
                     weapons_matched++;
 
-                    StatModifier accuracyTouch = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyTouch);
-                    StatModifier accuracyShort = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyShort);
-                    StatModifier accuracyMedium = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyMedium);
-                    StatModifier accuracyLong = thingDef.statBases.FirstOrDefault(sm => sm.stat == StatDefOf.AccuracyLong);
-
-                    if (accuracyTouch != null) accuracyTouch.value *= mod_settings.weapon_accuracy;
-                    if (accuracyShort != null) accuracyShort.value *= mod_settings.weapon_accuracy;
-                    if (accuracyMedium != null) accuracyMedium.value *= mod_settings.weapon_accuracy;
-                    if (accuracyLong != null) accuracyLong.value *= mod_settings.weapon_accuracy;
-
                     // Changes weapon BurstShotCount
                     if (!thingDef.Verbs.NullOrEmpty() && thingDef.building == null)
                     {
@@ -102,6 +97,10 @@ namespace ImprovedVanillaWeapons
                             primaryVerb.burstShotCount *= mod_settings.burst_multiplier;
 
                         primaryVerb.ticksBetweenBurstShots /= 2;
+
+                        // Projectile Speed
+                        if (primaryVerb.defaultProjectile != null)
+                            primaryVerb.defaultProjectile.projectile.speed *= 3f;
                     }
                 }
                 #endregion
@@ -115,7 +114,7 @@ namespace ImprovedVanillaWeapons
 
                     if (turret_properties != null && mod_settings.turret_rapid_fire)
                     {
-                        turret_properties.burstShotCount *= mod_settings.burst_multiplier;
+                        turret_properties.burstShotCount = mod_settings.burst_multiplier;
                         turret_properties.ticksBetweenBurstShots /= 2;
 
                         is_modified = true;
@@ -131,6 +130,9 @@ namespace ImprovedVanillaWeapons
 
                         is_modified = true;
                     }
+
+                    if (turret_properties != null && turret_properties.defaultProjectile != null)
+                        turret_properties.defaultProjectile.projectile.speed *= 3f;
 
                     if (is_modified)
                         turrets_modified++;
