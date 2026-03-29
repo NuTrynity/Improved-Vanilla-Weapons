@@ -60,8 +60,8 @@ namespace ImprovedVanillaWeapons
             listing.Label($"Weapon Accuracy: {mod_settings.weapon_accuracy:F1}");
             mod_settings.weapon_accuracy = listing.Slider(mod_settings.weapon_accuracy, 1.0f, 10.0f);
 
-            listing.Label($"Weapon Burst Modifier: {mod_settings.burst_multiplier:F1}");
-            mod_settings.burst_multiplier = (int)listing.Slider(mod_settings.burst_multiplier, 1, 3);
+            listing.Label($"Weapon Burst Modifier: {mod_settings.burst_multiplier:F0}x");
+            mod_settings.burst_multiplier = (int)listing.Slider(mod_settings.burst_multiplier, 1, 10);
 
             listing.End();
             base.DoSettingsWindowContents(inRect);
@@ -75,7 +75,7 @@ namespace ImprovedVanillaWeapons
 
         private void ApplyWeaponChanges()
         {
-            int weapons_matched = 0;
+            int weapons_modified = 0;
             int turrets_modified = 0;
 
             if (StatDefOf.AccuracyTouch != null) StatDefOf.AccuracyTouch.defaultBaseValue *= mod_settings.weapon_accuracy;
@@ -86,13 +86,13 @@ namespace ImprovedVanillaWeapons
             foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefs)
             {
                 #region Weapon Mods
-                if (thingDef.IsRangedWeapon && thingDef.weaponTags != null)
+                if (thingDef.IsRangedWeapon)
                 {
                     // Changes weapon accuracy
                     if (thingDef.statBases == null)
                         continue;
 
-                    weapons_matched++;
+                    weapons_modified++;
 
                     // Changes weapon BurstShotCount
                     if (!thingDef.Verbs.NullOrEmpty() && thingDef.building == null)
@@ -106,7 +106,7 @@ namespace ImprovedVanillaWeapons
 
                         // Projectile Speed
                         if (primaryVerb.defaultProjectile != null)
-                            primaryVerb.defaultProjectile.projectile.speed *= mod_settings.projectile_speed;
+                            primaryVerb.defaultProjectile.projectile.speed *= Mathf.Min(mod_settings.projectile_speed, 2.0f);
                     }
                 }
                 #endregion
@@ -114,9 +114,10 @@ namespace ImprovedVanillaWeapons
                 #region Turret Mods
                 if (thingDef.building?.IsTurret == true)
                 {
-                    ThingDef gun_def = thingDef.building.turretGunDef;
+                    BuildingProperties building_properties = thingDef.building;
+                    ThingDef gun_def = building_properties.turretGunDef;
                     VerbProperties? turret_properties = gun_def?.Verbs?.FirstOrDefault();
-                    bool is_artillery = thingDef.building.buildingTags.Contains("Artillery");
+                    bool is_artillery = building_properties.buildingTags.Contains("Artillery") || building_properties.buildingTags.Contains("Mortar");
                     bool is_modified = false;
 
                     if (turret_properties != null && mod_settings.turret_rapid_fire)
@@ -138,9 +139,8 @@ namespace ImprovedVanillaWeapons
                         is_modified = true;
                     }
 
-                    if (turret_properties != null && turret_properties.defaultProjectile != null)
-                        if (!is_artillery)
-                            turret_properties.defaultProjectile.projectile.speed *= mod_settings.projectile_speed;
+                    if (turret_properties != null && turret_properties.defaultProjectile != null && is_artillery == false)
+                        turret_properties.defaultProjectile.projectile.speed *= mod_settings.projectile_speed;
 
                     if (is_modified)
                         turrets_modified++;
@@ -149,7 +149,7 @@ namespace ImprovedVanillaWeapons
             }
 
             Log.Message("[SIVW] Successfully Modified Tagged Weapons");
-            Log.Message($"[SIVW] Weapons modified: {weapons_matched}");
+            Log.Message($"[SIVW] Weapons modified: {weapons_modified}");
             Log.Message($"[SIVW] Turrets modified: {turrets_modified}");
         }
     }
