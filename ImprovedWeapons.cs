@@ -11,7 +11,8 @@ namespace ImprovedVanillaWeapons
         public bool turret_instant_cooldown = true;
 
         public int burst_multiplier = 3;
-        public float weapon_accuracy = 2.0f;
+        public float weapon_accuracy = 2f;
+        public float projectile_speed = 2f;
 
         public override void ExposeData()
         {
@@ -19,7 +20,8 @@ namespace ImprovedVanillaWeapons
             Scribe_Values.Look(ref turret_instant_cooldown, "turret_instant_cooldown", true);
 
             Scribe_Values.Look(ref burst_multiplier, "burst_multiplier", 3);
-            Scribe_Values.Look(ref weapon_accuracy, "weapon_accuracy", 2.0f);
+            Scribe_Values.Look(ref weapon_accuracy, "weapon_accuracy", 2f);
+            Scribe_Values.Look(ref projectile_speed, "projectile_speed", 2f);
 
             base.ExposeData();
         }
@@ -42,6 +44,10 @@ namespace ImprovedVanillaWeapons
             listing.Begin(inRect);
             
             listing.Label("REQUIRES RESTART TO TAKE EFFECT");
+            listing.Gap();
+
+            listing.Label($"Projectile Speed: {mod_settings.projectile_speed:F1}");
+            mod_settings.projectile_speed = listing.Slider(mod_settings.projectile_speed, 1.0f, 2.0f);
             listing.Gap();
             
             listing.Label("=== Turret Modification ===");
@@ -100,7 +106,7 @@ namespace ImprovedVanillaWeapons
 
                         // Projectile Speed
                         if (primaryVerb.defaultProjectile != null)
-                            primaryVerb.defaultProjectile.projectile.speed *= 3f;
+                            primaryVerb.defaultProjectile.projectile.speed *= mod_settings.projectile_speed;
                     }
                 }
                 #endregion
@@ -110,6 +116,7 @@ namespace ImprovedVanillaWeapons
                 {
                     ThingDef gun_def = thingDef.building.turretGunDef;
                     VerbProperties? turret_properties = gun_def?.Verbs?.FirstOrDefault();
+                    bool is_artillery = thingDef.building.buildingTags.Contains("Artillery");
                     bool is_modified = false;
 
                     if (turret_properties != null && mod_settings.turret_rapid_fire)
@@ -132,7 +139,8 @@ namespace ImprovedVanillaWeapons
                     }
 
                     if (turret_properties != null && turret_properties.defaultProjectile != null)
-                        turret_properties.defaultProjectile.projectile.speed *= 3f;
+                        if (!is_artillery)
+                            turret_properties.defaultProjectile.projectile.speed *= mod_settings.projectile_speed;
 
                     if (is_modified)
                         turrets_modified++;
