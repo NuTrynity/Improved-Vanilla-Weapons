@@ -132,7 +132,7 @@ namespace ImprovedVanillaWeapons
                     {
                         if (thingDef.building.turretBurstCooldownTime > 0f)
                         {
-                            thingDef.building.turretBurstCooldownTime = 0.1f;
+                            thingDef.building.turretBurstCooldownTime = 1.0f;
                             thingDef.building.turretBurstWarmupTime = new FloatRange(0.0f);
                         }
 
