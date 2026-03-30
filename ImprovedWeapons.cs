@@ -2,6 +2,7 @@
 using UnityEngine;
 using RimWorld;
 using Verse;
+using System.Collections.Generic;
 
 namespace ImprovedVanillaWeapons
 {
@@ -45,23 +46,22 @@ namespace ImprovedVanillaWeapons
             
             listing.Label("REQUIRES RESTART TO TAKE EFFECT");
             listing.Gap();
-
-            listing.Label($"Projectile Speed: {mod_settings.projectile_speed:F1}");
-            mod_settings.projectile_speed = listing.Slider(mod_settings.projectile_speed, 1.0f, 2.0f);
-            listing.Gap();
             
             listing.Label("=== Turret Modification ===");
             listing.CheckboxLabeled("Rapid Fire Turrets", ref mod_settings.turret_rapid_fire);
             listing.CheckboxLabeled("Instant Cooldown", ref mod_settings.turret_instant_cooldown);
-
             listing.Gap();
 
             listing.Label("=== Weapon Modification ===");
             listing.Label($"Weapon Accuracy: {mod_settings.weapon_accuracy:F1}");
-            mod_settings.weapon_accuracy = listing.Slider(mod_settings.weapon_accuracy, 1.0f, 10.0f);
+            mod_settings.weapon_accuracy = listing.Slider(mod_settings.weapon_accuracy, 1.0f, 5.0f);
 
             listing.Label($"Weapon Burst Modifier: {mod_settings.burst_multiplier:F0}x");
-            mod_settings.burst_multiplier = (int)listing.Slider(mod_settings.burst_multiplier, 1, 10);
+            mod_settings.burst_multiplier = (int)listing.Slider(mod_settings.burst_multiplier, 1, 5);
+
+            listing.Gap();
+            listing.Label($"Projectile Speed: {mod_settings.projectile_speed:F1}");
+            mod_settings.projectile_speed = listing.Slider(mod_settings.projectile_speed, 1.0f, 2.0f);
 
             listing.End();
             base.DoSettingsWindowContents(inRect);
@@ -101,6 +101,9 @@ namespace ImprovedVanillaWeapons
 
                         if (primaryVerb.burstShotCount > 1)
                             primaryVerb.burstShotCount *= mod_settings.burst_multiplier;
+                        
+                        if (primaryVerb.defaultCooldownTime > 0)
+                            primaryVerb.defaultCooldownTime = 0f;
 
                         primaryVerb.ticksBetweenBurstShots /= 2;
 
@@ -117,7 +120,8 @@ namespace ImprovedVanillaWeapons
                     BuildingProperties building_properties = thingDef.building;
                     ThingDef gun_def = building_properties.turretGunDef;
                     VerbProperties? turret_properties = gun_def?.Verbs?.FirstOrDefault();
-                    bool is_artillery = building_properties.buildingTags.Contains("Artillery") || building_properties.buildingTags.Contains("Mortar");
+
+                    bool is_artillery = tag_contains_word(building_properties.buildingTags, ["Artillery", "Mortar"]);
                     bool is_modified = false;
 
                     if (turret_properties != null && mod_settings.turret_rapid_fire)
@@ -135,12 +139,13 @@ namespace ImprovedVanillaWeapons
                             thingDef.building.turretBurstCooldownTime = 1.0f;
                             thingDef.building.turretBurstWarmupTime = new FloatRange(0.0f);
                         }
-
+                        
                         is_modified = true;
                     }
 
-                    if (turret_properties != null && turret_properties.defaultProjectile != null && is_artillery == false)
-                        turret_properties.defaultProjectile.projectile.speed *= mod_settings.projectile_speed;
+                    if (turret_properties != null && turret_properties.defaultProjectile != null)
+                        if (!is_artillery)
+                            turret_properties.defaultProjectile.projectile.speed *= Mathf.Min(mod_settings.projectile_speed, 2.0f);
 
                     if (is_modified)
                         turrets_modified++;
@@ -151,6 +156,20 @@ namespace ImprovedVanillaWeapons
             Log.Message("[SIVW] Successfully Modified Tagged Weapons");
             Log.Message($"[SIVW] Weapons modified: {weapons_modified}");
             Log.Message($"[SIVW] Turrets modified: {turrets_modified}");
+        }
+
+        private bool tag_contains_word(List<string> tags, string[] words)
+        {
+            foreach (string tag in tags)
+            {
+                foreach (string word in words)
+                {
+                    if (tag.Contains(word))
+                        return true;
+                }
+            }
+
+            return false;
         }
     }
 }
