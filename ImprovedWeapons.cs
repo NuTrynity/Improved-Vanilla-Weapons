@@ -121,16 +121,13 @@ namespace ImprovedVanillaWeapons
                     ThingDef gun_def = building_properties.turretGunDef;
                     VerbProperties? turret_properties = gun_def?.Verbs?.FirstOrDefault();
 
-                    bool is_artillery = building_properties.IsMortar;
                     bool is_modified = false;
 
                     if (turret_properties != null && mod_settings.turret_rapid_fire)
                     {
                         if (turret_properties.burstShotCount > 1)
-                        {    
+                        {
                             turret_properties.burstShotCount *= mod_settings.burst_multiplier;
-                            turret_properties.ticksBetweenBurstShots /= 2;
-
                             is_modified = true;
                         }
                     }
@@ -141,13 +138,13 @@ namespace ImprovedVanillaWeapons
                         {
                             thingDef.building.turretBurstCooldownTime = 1.0f;
                             thingDef.building.turretBurstWarmupTime = new FloatRange(0.0f);
+                            
+                            is_modified = true;
                         }
-                        
-                        is_modified = true;
                     }
 
                     if (turret_properties != null && turret_properties.defaultProjectile != null)
-                        if (!is_artillery)
+                        if (!building_properties.IsMortar)
                             turret_properties.defaultProjectile.projectile.speed *= Mathf.Min(mod_settings.projectile_speed, 2.0f);
 
                     if (is_modified)
