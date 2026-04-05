@@ -121,15 +121,18 @@ namespace ImprovedVanillaWeapons
                     ThingDef gun_def = building_properties.turretGunDef;
                     VerbProperties? turret_properties = gun_def?.Verbs?.FirstOrDefault();
 
-                    bool is_artillery = tag_contains_word(building_properties.buildingTags, ["Artillery", "Mortar"]);
+                    bool is_artillery = building_properties.IsMortar;
                     bool is_modified = false;
 
                     if (turret_properties != null && mod_settings.turret_rapid_fire)
                     {
-                        turret_properties.burstShotCount = mod_settings.burst_multiplier;
-                        turret_properties.ticksBetweenBurstShots /= 2;
+                        if (turret_properties.burstShotCount > 1)
+                        {    
+                            turret_properties.burstShotCount *= mod_settings.burst_multiplier;
+                            turret_properties.ticksBetweenBurstShots /= 2;
 
-                        is_modified = true;
+                            is_modified = true;
+                        }
                     }
 
                     if (mod_settings.turret_instant_cooldown)
