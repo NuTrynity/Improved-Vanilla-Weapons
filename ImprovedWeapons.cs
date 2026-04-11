@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using RimWorld;
 using Verse;
-using System.Collections.Generic;
 
 namespace ImprovedVanillaWeapons
 {
@@ -156,20 +156,6 @@ namespace ImprovedVanillaWeapons
             Log.Message("[SIVW] Successfully Modified Tagged Weapons");
             Log.Message($"[SIVW] Weapons modified: {weapons_modified}");
             Log.Message($"[SIVW] Turrets modified: {turrets_modified}");
-        }
-
-        private bool tag_contains_word(List<string> tags, string[] words)
-        {
-            foreach (string tag in tags)
-            {
-                foreach (string word in words)
-                {
-                    if (tag.Contains(word))
-                        return true;
-                }
-            }
-
-            return false;
         }
     }
 }
