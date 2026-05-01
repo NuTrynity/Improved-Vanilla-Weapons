@@ -52,7 +52,7 @@ namespace ImprovedVanillaWeapons
             listing.CheckboxLabeled("Instant Cooldown", ref mod_settings.turret_instant_cooldown);
             listing.Gap();
 
-            listing.Label("=== Weapon Modification ===");
+            listing.Label("=== Modifications ===");
             listing.Label($"Weapon Accuracy: {mod_settings.weapon_accuracy:F1}");
             mod_settings.weapon_accuracy = listing.Slider(mod_settings.weapon_accuracy, 1.0f, 5.0f);
 
@@ -78,20 +78,35 @@ namespace ImprovedVanillaWeapons
             int weapons_modified = 0;
             int turrets_modified = 0;
 
-            if (StatDefOf.AccuracyTouch != null) StatDefOf.AccuracyTouch.defaultBaseValue *= mod_settings.weapon_accuracy;
-            if (StatDefOf.AccuracyShort != null) StatDefOf.AccuracyShort.defaultBaseValue *= mod_settings.weapon_accuracy;
-            if (StatDefOf.AccuracyMedium != null) StatDefOf.AccuracyMedium.defaultBaseValue *= mod_settings.weapon_accuracy;
-            if (StatDefOf.AccuracyLong != null) StatDefOf.AccuracyLong.defaultBaseValue *= mod_settings.weapon_accuracy;
+            StatDefOf.ShootingAccuracyPawn.defaultBaseValue *= mod_settings.weapon_accuracy;
+
+            List<StatDef> weapon_accuracies = new List<StatDef>
+            {
+                StatDefOf.AccuracyLong,
+                StatDefOf.AccuracyMedium,
+                StatDefOf.AccuracyShort,
+                StatDefOf.AccuracyTouch
+            };
 
             foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefs)
             {
                 #region Weapon Mods
+                // Modify Weapon Accuracy
                 if (thingDef.IsRangedWeapon)
                 {
-                    // Changes weapon accuracy
-                    if (thingDef.statBases == null)
-                        continue;
+                    if (thingDef.statBases != null)
+                    {
+                        for (int i = 0; i < thingDef.statBases.Count; i++)
+                        {
+                            StatModifier stat_mod = thingDef.statBases[i];
 
+                            if (weapon_accuracies.Contains(stat_mod.stat))
+                            {
+                                stat_mod.value = Mathf.Clamp01(stat_mod.value *= mod_settings.weapon_accuracy);
+                            }
+                        }
+                    }
+                    
                     weapons_modified++;
 
                     // Changes weapon BurstShotCount
@@ -99,7 +114,7 @@ namespace ImprovedVanillaWeapons
                     {
                         VerbProperties primaryVerb = thingDef.Verbs[0];
 
-                        if (primaryVerb.burstShotCount > 1)
+                        if (primaryVerb.burstShotCount > 2)
                             primaryVerb.burstShotCount *= mod_settings.burst_multiplier;
                         
                         if (primaryVerb.defaultCooldownTime > 0)
