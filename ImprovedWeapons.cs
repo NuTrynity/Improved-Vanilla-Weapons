@@ -13,7 +13,7 @@ namespace ImprovedVanillaWeapons
 
         public int burst_multiplier = 3;
         public float weapon_accuracy = 2f;
-        public float projectile_speed = 2f;
+        public bool faster_projectiles = true;
 
         public override void ExposeData()
         {
@@ -22,7 +22,7 @@ namespace ImprovedVanillaWeapons
 
             Scribe_Values.Look(ref burst_multiplier, "burst_multiplier", 3);
             Scribe_Values.Look(ref weapon_accuracy, "weapon_accuracy", 2f);
-            Scribe_Values.Look(ref projectile_speed, "projectile_speed", 2f);
+            Scribe_Values.Look(ref faster_projectiles, "faster_projectiles", true);
 
             base.ExposeData();
         }
@@ -60,8 +60,7 @@ namespace ImprovedVanillaWeapons
             mod_settings.burst_multiplier = (int)listing.Slider(mod_settings.burst_multiplier, 1, 5);
 
             listing.Gap();
-            listing.Label($"Projectile Speed: {mod_settings.projectile_speed:F1}");
-            mod_settings.projectile_speed = listing.Slider(mod_settings.projectile_speed, 1.0f, 2.0f);
+            listing.CheckboxLabeled("Faster Projectiles", ref mod_settings.faster_projectiles);
 
             listing.End();
             base.DoSettingsWindowContents(inRect);
@@ -123,8 +122,8 @@ namespace ImprovedVanillaWeapons
                         primaryVerb.ticksBetweenBurstShots /= 2;
 
                         // Projectile Speed
-                        if (primaryVerb.defaultProjectile != null)
-                            primaryVerb.defaultProjectile.projectile.speed *= Mathf.Min(mod_settings.projectile_speed, 2.0f);
+                        if (primaryVerb.defaultProjectile != null && mod_settings.faster_projectiles)
+                            primaryVerb.defaultProjectile.projectile.speed = 210f;
                     }
                 }
                 #endregion
@@ -159,8 +158,8 @@ namespace ImprovedVanillaWeapons
                     }
 
                     if (turret_properties != null && turret_properties.defaultProjectile != null)
-                        if (!building_properties.IsMortar)
-                            turret_properties.defaultProjectile.projectile.speed *= Mathf.Min(mod_settings.projectile_speed, 2.0f);
+                        if (!building_properties.IsMortar && mod_settings.faster_projectiles)
+                            turret_properties.defaultProjectile.projectile.speed = 210f;
 
                     if (is_modified)
                         turrets_modified++;

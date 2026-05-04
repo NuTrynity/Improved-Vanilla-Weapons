@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <RWPath>/media/nutrynity/240GB_SSD/SteamLibrary/steamapps/common/RimWorld</RWPath>
+    <RWPath>/run/media/nutrynity/SteamLibrary/steamapps/common/RimWorld</RWPath>
     <OutputPath>ImprovedWeapons/Assemblies/</OutputPath>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -16,7 +16,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>/RimWorldLinux_Data/Managed/UnityEngine.dll</HintPath>
+      <HintPath>$(RWPath)/RimWorldLinux_Data/Managed/UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
@@ -24,4 +24,8 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+
+  <Target Name="ClearPdb" AfterTargets="Build">
+    <Delete Files="$(OutputPath)$(TargetName).pdb" />
+  </Target>
 </Project>
