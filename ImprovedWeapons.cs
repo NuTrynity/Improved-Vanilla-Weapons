@@ -52,7 +52,7 @@ namespace ImprovedVanillaWeapons
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(inRect);
             
-            listing.Label("<color=yellow>CHANGES NEED A RELOAD SAVE TO TAKE EFFECT</color>");
+            listing.Label("<color=yellow>CHANGES NEED A SAVE RELOAD TO TAKE EFFECT</color>");
             listing.Gap();
             
             listing.Label("=== Turret Modification ===");
