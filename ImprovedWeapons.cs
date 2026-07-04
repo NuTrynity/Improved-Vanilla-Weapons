@@ -32,19 +32,27 @@ namespace ImprovedVanillaWeapons
     {
         public ImprovedWeaponsSettings mod_settings;
 
+        // Structured dictionaries to save original baseline values
+        private static Dictionary<ThingDef, Dictionary<StatDef, float>> originalWeaponAccuracies = new Dictionary<ThingDef, Dictionary<StatDef, float>>();
+        private static Dictionary<ThingDef, (int burst, float cooldown, int ticks)> originalWeaponVerbs = new Dictionary<ThingDef, (int, float, int)>();
+        private static Dictionary<ThingDef, (int burst, FloatRange warmup, float cooldown)> originalTurretProperties = new Dictionary<ThingDef, (int, FloatRange, float)>();
+        private static Dictionary<ProjectileProperties, float> originalProjectileSpeeds = new Dictionary<ProjectileProperties, float>();
+        private static float? originalPawnShootingAccuracy = null;
+
         public ImprovedWeapons(ModContentPack content) : base(content)
         {
             mod_settings = GetSettings<ImprovedWeaponsSettings>();
-            LongEventHandler.QueueLongEvent(ApplyWeaponChanges, "[SIVW] Changing Weapon Values", true, null);
+            // Cache and apply once at startup
+            LongEventHandler.QueueLongEvent(InitializeAndApply, "[SIVW] Caching and Initializing Weapon Values", true, null);
         }
 
-        #region Mod Settings
+        #region Mod Settings UI
         public override void DoSettingsWindowContents(Rect inRect)
         {
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(inRect);
             
-            listing.Label("REQUIRES RESTART TO TAKE EFFECT");
+            listing.Label("<color=yellow>CHANGES TAKE EFFECT IMMEDIATELY IN-GAME</color>");
             listing.Gap();
             
             listing.Label("=== Turret Modification ===");
@@ -53,7 +61,7 @@ namespace ImprovedVanillaWeapons
             listing.Gap();
 
             listing.Label("=== Modifications ===");
-            listing.Label($"Weapon Accuracy: {mod_settings.weapon_accuracy:F1}");
+            listing.Label($"Weapon Accuracy: {mod_settings.weapon_accuracy:F1}x");
             mod_settings.weapon_accuracy = listing.Slider(mod_settings.weapon_accuracy, 1.0f, 5.0f);
 
             listing.Label($"Weapon Burst Modifier: {mod_settings.burst_multiplier:F0}x");
@@ -70,96 +78,169 @@ namespace ImprovedVanillaWeapons
         {
             return "[NuT] Slightly Improved Weapons";
         }
+
+        public override void WriteSettings()
+        {
+            base.WriteSettings();
+            ApplyWeaponChanges();
+        }
         #endregion
+
+        private void InitializeAndApply()
+        {
+            CacheVanillaValues();
+            ApplyWeaponChanges();
+        }
+
+        private void CacheVanillaValues()
+        {
+            // 1. Cache global Pawn shooting accuracy
+            originalPawnShootingAccuracy = StatDefOf.ShootingAccuracyPawn.defaultBaseValue;
+
+            List<StatDef> weapon_accuracies = new List<StatDef>
+            {
+                StatDefOf.AccuracyLong, StatDefOf.AccuracyMedium, StatDefOf.AccuracyShort, StatDefOf.AccuracyTouch
+            };
+
+            foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefs)
+            {
+                // 2. Cache Weapon data
+                if (thingDef.IsRangedWeapon)
+                {
+                    if (thingDef.statBases != null)
+                    {
+                        var statDict = new Dictionary<StatDef, float>();
+                        foreach (StatModifier stat_mod in thingDef.statBases)
+                        {
+                            if (weapon_accuracies.Contains(stat_mod.stat))
+                                statDict[stat_mod.stat] = stat_mod.value;
+                        }
+                        originalWeaponAccuracies[thingDef] = statDict;
+                    }
+
+                    if (!thingDef.Verbs.NullOrEmpty() && thingDef.building == null)
+                    {
+                        VerbProperties primaryVerb = thingDef.Verbs[0];
+                        originalWeaponVerbs[thingDef] = (primaryVerb.burstShotCount, primaryVerb.defaultCooldownTime, primaryVerb.ticksBetweenBurstShots);
+
+                        if (primaryVerb.defaultProjectile?.projectile != null && !originalProjectileSpeeds.ContainsKey(primaryVerb.defaultProjectile.projectile))
+                        {
+                            originalProjectileSpeeds[primaryVerb.defaultProjectile.projectile] = primaryVerb.defaultProjectile.projectile.speed;
+                        }
+                    }
+                }
+
+                // 3. Cache Turret data
+                if (thingDef.building?.IsTurret == true)
+                {
+                    BuildingProperties bProps = thingDef.building;
+                    VerbProperties? turretVerb = bProps.turretGunDef?.Verbs?.FirstOrDefault();
+
+                    int origBurst = turretVerb != null ? turretVerb.burstShotCount : 0;
+                    originalTurretProperties[thingDef] = (origBurst, bProps.turretBurstWarmupTime, bProps.turretBurstCooldownTime);
+
+                    if (turretVerb?.defaultProjectile?.projectile != null && !originalProjectileSpeeds.ContainsKey(turretVerb.defaultProjectile.projectile))
+                    {
+                        originalProjectileSpeeds[turretVerb.defaultProjectile.projectile] = turretVerb.defaultProjectile.projectile.speed;
+                    }
+                }
+            }
+        }
 
         private void ApplyWeaponChanges()
         {
             int weapons_modified = 0;
             int turrets_modified = 0;
 
-            StatDefOf.ShootingAccuracyPawn.defaultBaseValue *= mod_settings.weapon_accuracy;
+            // Restore global pawn accuracy to vanilla base before multiplying
+            if (originalPawnShootingAccuracy.HasValue)
+                StatDefOf.ShootingAccuracyPawn.defaultBaseValue = originalPawnShootingAccuracy.Value * mod_settings.weapon_accuracy;
 
             List<StatDef> weapon_accuracies = new List<StatDef>
             {
-                StatDefOf.AccuracyLong,
-                StatDefOf.AccuracyMedium,
-                StatDefOf.AccuracyShort,
-                StatDefOf.AccuracyTouch
+                StatDefOf.AccuracyLong, StatDefOf.AccuracyMedium, StatDefOf.AccuracyShort, StatDefOf.AccuracyTouch
             };
 
             foreach (ThingDef thingDef in DefDatabase<ThingDef>.AllDefs)
             {
-                #region Weapon Mods
-                // Modify Weapon Accuracy
+                #region Apply Weapon Mods
                 if (thingDef.IsRangedWeapon)
                 {
-                    if (thingDef.statBases != null)
+                    // Reset and update accuracy stats from clean cache
+                    if (thingDef.statBases != null && originalWeaponAccuracies.TryGetValue(thingDef, out var cachedStats))
                     {
-                        for (int i = 0; i < thingDef.statBases.Count; i++)
+                        foreach (StatModifier stat_mod in thingDef.statBases)
                         {
-                            StatModifier stat_mod = thingDef.statBases[i];
-
-                            if (weapon_accuracies.Contains(stat_mod.stat))
+                            if (cachedStats.TryGetValue(stat_mod.stat, out float vanillaValue))
                             {
-                                stat_mod.value = Mathf.Clamp01(stat_mod.value *= mod_settings.weapon_accuracy);
+                                stat_mod.value = Mathf.Clamp01(vanillaValue * mod_settings.weapon_accuracy);
                             }
                         }
                     }
                     
                     weapons_modified++;
 
-                    // Changes weapon BurstShotCount
-                    if (!thingDef.Verbs.NullOrEmpty() && thingDef.building == null)
+                    // Reset and update Verb properties from clean cache
+                    if (!thingDef.Verbs.NullOrEmpty() && thingDef.building == null && originalWeaponVerbs.TryGetValue(thingDef, out var cachedVerb))
                     {
                         VerbProperties primaryVerb = thingDef.Verbs[0];
 
-                        if (primaryVerb.burstShotCount > 2)
-                            primaryVerb.burstShotCount *= mod_settings.burst_multiplier;
-                        
-                        if (primaryVerb.defaultCooldownTime > 0)
-                            primaryVerb.defaultCooldownTime = 0f;
-
-                        primaryVerb.ticksBetweenBurstShots /= 2;
+                        primaryVerb.burstShotCount = cachedVerb.burst > 2 ? cachedVerb.burst * mod_settings.burst_multiplier : cachedVerb.burst;
+                        primaryVerb.defaultCooldownTime = cachedVerb.cooldown > 0 ? 0f : cachedVerb.cooldown; // Keeps it instantly refreshed
+                        primaryVerb.ticksBetweenBurstShots = cachedVerb.ticks / 2;
 
                         // Projectile Speed
-                        if (primaryVerb.defaultProjectile != null && mod_settings.faster_projectiles)
-                            primaryVerb.defaultProjectile.projectile.speed = 210f;
+                        if (primaryVerb.defaultProjectile?.projectile != null && originalProjectileSpeeds.TryGetValue(primaryVerb.defaultProjectile.projectile, out float vanillaSpeed))
+                        {
+                            primaryVerb.defaultProjectile.projectile.speed = mod_settings.faster_projectiles ? 210f : vanillaSpeed;
+                        }
                     }
                 }
                 #endregion
 
-                #region Turret Mods
-                if (thingDef.building?.IsTurret == true)
+                #region Apply Turret Mods
+                if (thingDef.building?.IsTurret == true && originalTurretProperties.TryGetValue(thingDef, out var cachedTurret))
                 {
                     BuildingProperties building_properties = thingDef.building;
-                    ThingDef gun_def = building_properties.turretGunDef;
-                    VerbProperties? turret_properties = gun_def?.Verbs?.FirstOrDefault();
+                    VerbProperties? turret_properties = building_properties.turretGunDef?.Verbs?.FirstOrDefault();
 
                     bool is_modified = false;
 
-                    if (turret_properties != null && mod_settings.turret_rapid_fire)
+                    // Reset and update burst settings
+                    if (turret_properties != null)
                     {
-                        if (turret_properties.burstShotCount > 1)
+                        if (mod_settings.turret_rapid_fire && cachedTurret.burst > 1)
                         {
-                            turret_properties.burstShotCount *= mod_settings.burst_multiplier;
+                            turret_properties.burstShotCount = cachedTurret.burst * mod_settings.burst_multiplier;
                             is_modified = true;
+                        }
+                        else
+                        {
+                            turret_properties.burstShotCount = cachedTurret.burst; // Revert to vanilla
                         }
                     }
 
+                    // Reset and update cooldown settings
                     if (mod_settings.turret_instant_cooldown)
                     {
-                        if (thingDef.building.turretBurstCooldownTime > 0f)
-                        {
-                            thingDef.building.turretBurstCooldownTime = 1.0f;
-                            thingDef.building.turretBurstWarmupTime = new FloatRange(0.0f);
-                            
-                            is_modified = true;
-                        }
+                        building_properties.turretBurstCooldownTime = 1.0f;
+                        building_properties.turretBurstWarmupTime = new FloatRange(0.0f);
+                        is_modified = true;
+                    }
+                    else
+                    {
+                        building_properties.turretBurstCooldownTime = cachedTurret.cooldown;
+                        building_properties.turretBurstWarmupTime = cachedTurret.warmup;
                     }
 
-                    if (turret_properties != null && turret_properties.defaultProjectile != null)
+                    // Reset and update Projectile speeds
+                    if (turret_properties?.defaultProjectile?.projectile != null && originalProjectileSpeeds.TryGetValue(turret_properties.defaultProjectile.projectile, out float vanillaSpeed))
+                    {
                         if (!building_properties.IsMortar && mod_settings.faster_projectiles)
                             turret_properties.defaultProjectile.projectile.speed = 210f;
+                        else
+                            turret_properties.defaultProjectile.projectile.speed = vanillaSpeed;
+                    }
 
                     if (is_modified)
                         turrets_modified++;
@@ -167,9 +248,7 @@ namespace ImprovedVanillaWeapons
                 #endregion
             }
 
-            Log.Message("[SIVW] Successfully Modified Tagged Weapons");
-            Log.Message($"[SIVW] Weapons modified: {weapons_modified}");
-            Log.Message($"[SIVW] Turrets modified: {turrets_modified}");
+            Log.Message($"[SIVW] Dynamic Settings Refreshed! Weapons: {weapons_modified}, Turrets: {turrets_modified}");
         }
     }
 }
