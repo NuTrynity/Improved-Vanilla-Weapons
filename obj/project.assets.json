@@ -433,6 +433,7 @@
         "net472"
       ],
       "sources": {
+        "/usr/lib/dotnet/library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -464,7 +465,7 @@
             "autoReferenced": true
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.109/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.112/RuntimeIdentifierGraph.json"
       }
     }
   }

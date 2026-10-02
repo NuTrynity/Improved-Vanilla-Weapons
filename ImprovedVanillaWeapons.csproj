@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <RWPath>/mnt/240GB_SSD/SteamLibrary/steamapps/common/RimWorld/</RWPath>
+    <RWPath>/media/nutrynity/240GB_SSD/SteamLibrary/steamapps/common/RimWorld/</RWPath>
     <OutputPath>ImprovedWeapons/Assemblies/</OutputPath>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
